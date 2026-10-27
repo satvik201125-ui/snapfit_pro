@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapFit Pro 360: Immersive Virtual Fitting Room</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        fit: {
+                            50: '#f0fdf4',
+                            500: '#10b981',
+                            600: '#059669',
+                            dark: '#030712',
+                            card: '#0f172a',
+                            border: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #030712;
+            color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-panel-glow {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.22);
+        }
+        .mirror-container {
+            box-shadow: 0 0 60px -15px rgba(16, 185, 129, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.95);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+        input[type=range] {
+            accent-color: #10b981;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-gray-200 antialiased selection:bg-emerald-500 selection:text-black">
+
+    <!-- TOP NAVIGATION HEADER -->
+    <header class="h-16 border-b border-gray-800/80 glass-panel sticky top-0 z-50 px-4 md:px-8 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 flex items-center justify-center text-black font-extrabold text-xl shadow-lg shadow-emerald-500/25">
+                <i data-lucide="scan-face" class="w-6 h-6 stroke-[2.5]"></i>
+            </div>
+            <div>
+                <h1 class="font-display font-extrabold text-lg md:text-xl tracking-tight text-white flex items-center gap-2">
+                    SNAPFIT <span class="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">PRO 360</span>
+                    <span class="text-[10px] uppercase font-semibold tracking-widest bg-emerald-950/90 border border-emerald-500/40 text-emerald-400 px-2 py-0.5 rounded-full">v6.0 Ultimate</span>
+                </h1>
+                <p class="text-[11px] text-gray-400 hidden sm:block">Immersive 360° Virtual Fitting Room with Face & Body Match</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="hidden lg:flex items-center gap-3 text-xs bg-gray-950/90 border border-gray-800 px-3 py-1.5 rounded-full">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-gray-400">Turntable Angle:</span>
+                <span id="headerAngleLabel" class="font-bold text-emerald-400 font-mono">0° (Front)</span>
+            </div>
+
+            <button onclick="toggleMatrixModal()" class="flex items-center gap-2 text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-black px-4 py-2 rounded-xl shadow-lg shadow-emerald-500/20 transition-all">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                <span>360° Multi-Angle Matrix</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN WORKSPACE CONTAINER -->
+    <main class="flex-1 max-w-[1920px] w-full mx-auto p-3 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        <!-- LEFT COLUMN: FACE & BODY PROFILE & ALIGNMENT (3 Cols) -->
+        <section class="lg:col-span-3 flex flex-col gap-4">
+            
+            <!-- Face & Body Capture Card -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col gap-3">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <h2 class="text-sm font-semibold tracking-wide text-gray-100 flex items-center gap-2">
+                        <i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i>
+                        1. Face & Body Profile
+                    </h2>
+                    <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded">100% Match Lock</span>
+                </div>
+
+                <!-- User Photo & Mesh Preview Viewport -->
+                <div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-gray-950 border border-gray-800 group">
+                    <img id="userBaseImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover" alt="User Base Portrait">
+                    
+                    <!-- Mesh & Alignment Overlay Canvases -->
+                    <canvas id="faceMeshCanvas" class="absolute inset-0 w-full h-full pointer-events-none opacity-90"></canvas>
+                    <canvas id="bodyMeshCanvas" class="absolute inset-0 w-full h-full pointer-events-none opacity-80"></canvas>
+
+                    <!-- Scanning Simulation Line -->
+                    <div id="scanLine" class="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] hidden pointer-events-none"></div>
+
+                    <!-- Upload Controls on Hover -->
+                    <div class="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3 gap-2">
+                        <label class="cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-2 shadow-lg transition-all">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            Upload Full-Body / Face Photo
+                            <input type="file" id="userPhotoInput" accept="image/*" class="hidden" onchange="handleUserPhotoUpload(event)">
+                        </label>
+                        <button onclick="triggerWebcamCapture()" class="bg-gray-900/90 hover:bg-gray-800 border border-gray-700 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="camera" class="w-4 h-4 text-emerald-400"></i>
+                            Capture Webcam Snapshot
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Alignment & Skin Tone Settings -->
+                <div class="space-y-2.5 text-xs pt-1">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Neck Skin-Tone Matching</span>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="setSkinTone('#fcd5ce')" class="w-5 h-5 rounded-full bg-[#fcd5ce] border border-white/30 hover:scale-110 transition-transform"></button>
+                            <button onclick="setSkinTone('#e0ac69')" class="w-5 h-5 rounded-full bg-[#e0ac69] border border-emerald-400 scale-110 transition-transform"></button>
+                            <button onclick="setSkinTone('#c68642')" class="w-5 h-5 rounded-full bg-[#c68642] border border-white/30 hover:scale-110 transition-transform"></button>
+                            <button onclick="setSkinTone('#8d5524')" class="w-5 h-5 rounded-full bg-[#8d5524] border border-white/30 hover:scale-110 transition-transform"></button>
+                        </div>
+                    </div>
+
+                    <!-- Body Sliders -->
+                    <div>
+                        <div class="flex justify-between text-gray-300 mb-1">
+                            <span>Shoulder Width</span>
+                            <span id="valShoulder" class="font-mono text-emerald-400 font-semibold">44 cm</span>
+                        </div>
+                        <input type="range" min="32" max="58" value="44" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer" oninput="updateBodyDimension('Shoulder', this.value)">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-gray-300 mb-1">
+                            <span>Waistline Curve</span>
+                            <span id="valWaist" class="font-mono text-emerald-400 font-semibold">74 cm</span>
+                        </div>
+                        <input type="range" min="50" max="110" value="74" class="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer" oninput="updateBodyDimension('Waist', this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved Lookbook / History Drawer -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col gap-3 flex-1">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-2">
+                        <i data-lucide="bookmark" class="w-3.5 h-3.5 text-cyan-400"></i>
+                        Saved Lookbook
+                    </h3>
+                    <button onclick="clearLookbook()" class="text-[10px] text-gray-500 hover:text-rose-400 transition-colors">Clear All</button>
+                </div>
+                <div id="lookbookContainer" class="grid grid-cols-3 gap-2 overflow-y-auto max-h-48 pr-1">
+                    <!-- Lookbook items populated via JS -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- CENTER COLUMN: 360-DEGREE VIRTUAL MIRROR RENDERER (6 Cols) -->
+        <section class="lg:col-span-6 flex flex-col gap-4">
+            <div class="glass-panel-glow rounded-3xl p-4 md:p-5 flex flex-col gap-4 relative">
+                
+                <!-- Viewport Control Header -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></div>
+                        <h2 class="font-display font-bold text-base text-white tracking-wide flex items-center gap-2">
+                            360° Virtual Mirror Stage
+                            <span id="currentAngleBadge" class="text-xs font-mono font-semibold bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-2.5 py-0.5 rounded-md">0° Front View</span>
+                        </h2>
+                    </div>
+
+                    <!-- Auto-Spin Turntable Toggle -->
+                    <button id="autoSpinBtn" onclick="toggleAutoSpin()" class="flex items-center gap-1.5 text-xs bg-gray-900 hover:bg-gray-800 border border-gray-700 text-emerald-400 px-3.5 py-1.5 rounded-xl transition-all">
+                        <i data-lucide="play" class="w-3.5 h-3.5 fill-emerald-400" id="spinIcon"></i>
+                        <span id="spinText">Auto-Spin 360°</span>
+                    </button>
+                </div>
+
+                <!-- MAIN INTERACTIVE 360 TURNTABLE VIEWPORT -->
+                <div class="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-black mirror-container border border-emerald-500/25 flex items-center justify-center">
+                    
+                    <div id="turntableStage" class="relative w-full h-full">
+                        <!-- Photorealistic Body Canvas -->
+                        <canvas id="bodyCanvas" class="absolute inset-0 w-full h-full z-0"></canvas>
+
+                        <!-- User Base Portrait Hidden Reference -->
+                        <img id="mirrorUserImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop" class="hidden" alt="User Base">
+
+                        <!-- Warped 360 Garment Canvas -->
+                        <canvas id="garment360Canvas" class="absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
+
+                        <!-- Environment Lighting Overlay -->
+                        <div id="lightingOverlay" class="absolute inset-0 pointer-events-none transition-all duration-300 mix-blend-overlay bg-transparent z-20"></div>
+
+                        <!-- Face Identity Lock Mask -->
+                        <canvas id="faceLockCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-30"></canvas>
+
+                        <!-- Floating HUD Overlay -->
+                        <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between pointer-events-none z-40">
+                            <!-- Store Tag Card -->
+                            <div class="glass-panel px-3.5 py-2.5 rounded-xl border border-white/10 flex items-center gap-3 shadow-xl">
+                                <div class="w-10 h-10 rounded-lg bg-gray-900 overflow-hidden border border-gray-700">
+                                    <img id="hudGarmentThumb" src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Thumb">
+                                </div>
+                                <div>
+                                    <h4 id="hudGarmentTitle" class="text-xs font-bold text-white">Zara Emerald Silk Blazer</h4>
+                                    <p id="hudStoreTag" class="text-[10px] text-emerald-400 font-mono">Zara Flagship Mall • $129.00</p>
+                                </div>
+                            </div>
+
+                            <!-- Simulation Status -->
+                            <div class="flex flex-col items-end gap-1 text-[10px] font-mono">
+                                <span class="bg-black/85 border border-emerald-500/40 text-emerald-300 px-2.5 py-1 rounded-md flex items-center gap-1 shadow-md">
+                                    <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i> Face & Body Match: 100%
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 360 TURNTABLE SLIDER & ANGLE PRESETS -->
+                <div class="glass-panel p-3 rounded-2xl flex flex-col gap-2.5">
+                    <div class="flex items-center justify-between text-xs text-gray-300">
+                        <span class="flex items-center gap-1.5 font-semibold">
+                            <i data-lucide="rotate-3d" class="w-4 h-4 text-emerald-400"></i>
+                            360° Turntable Angle:
+                        </span>
+                        <span id="angleValueText" class="font-mono text-emerald-400 font-bold">0° (Front View)</span>
+                    </div>
+
+                    <!-- Turntable Range Slider -->
+                    <input type="range" id="turntableSlider" min="0" max="360" value="0" step="5" class="w-full h-2 bg-gray-950 rounded-lg appearance-none cursor-pointer border border-gray-800" oninput="updateTurntableAngle(this.value)">
+
+                    <!-- Quick Angle Presets -->
+                    <div class="grid grid-cols-5 gap-1.5 pt-1 text-[11px]">
+                        <button onclick="setTurntablePreset(0)" id="preset0" class="py-1.5 px-2 rounded-lg bg-emerald-500 text-black font-extrabold transition-all">Front (0°)</button>
+                        <button onclick="setTurntablePreset(45)" id="preset45" class="py-1.5 px-2 rounded-lg bg-gray-900 border border-gray-800 text-gray-300 hover:border-emerald-500 transition-all">45° Side</button>
+                        <button onclick="setTurntablePreset(90)" id="preset90" class="py-1.5 px-2 rounded-lg bg-gray-900 border border-gray-800 text-gray-300 hover:border-emerald-500 transition-all">90° Profile</button>
+                        <button onclick="setTurntablePreset(135)" id="preset135" class="py-1.5 px-2 rounded-lg bg-gray-900 border border-gray-800 text-gray-300 hover:border-emerald-500 transition-all">135° Rear</button>
+                        <button onclick="setTurntablePreset(180)" id="preset180" class="py-1.5 px-2 rounded-lg bg-gray-900 border border-gray-800 text-gray-300 hover:border-emerald-500 transition-all">180° Back</button>
+                    </div>
+                </div>
+
+                <!-- ACTION FOOTER: COMPARE & EXPORT -->
+                <div class="flex items-center justify-between gap-3">
+                    <button onclick="toggleBeforeAfterMode()" id="compareToggleBtn" class="bg-gray-900 hover:bg-gray-800 border border-gray-700 text-emerald-400 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+                        <i data-lucide="split" class="w-4 h-4"></i>
+                        Before / After Comparison
+                    </button>
+
+                    <button onclick="saveCurrentLook()" class="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/25 flex items-center gap-2 transition-all">
+                        <i data-lucide="bookmark-plus" class="w-4 h-4"></i>
+                        Save Look to Lookbook
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: MALL GARMENT SNAP & LIGHTING MODES (3 Cols) -->
+        <section class="lg:col-span-3 flex flex-col gap-4">
+            
+            <!-- Mall Garment Snap & Smart AI Cutout -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col gap-3">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <h2 class="text-sm font-semibold tracking-wide text-gray-100 flex items-center gap-2">
+                        <i data-lucide="shirt" class="w-4 h-4 text-cyan-400"></i>
+                        2. Mall Garment Snap & Cutout
+                    </h2>
+                    <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-2 py-0.5 rounded">AI Isolator</span>
+                </div>
+
+                <!-- Garment Image Preview & Eraser Canvas -->
+                <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-950 border border-gray-800 flex items-center justify-center group">
+                    <img id="garmentSourceImg" src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-contain p-2" alt="Mall Garment">
+                    
+                    <canvas id="garmentCutoutCanvas" class="absolute inset-0 w-full h-full pointer-events-none opacity-90"></canvas>
+
+                    <div class="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-center items-center p-3 gap-2">
+                        <label class="cursor-pointer bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-xs py-2 px-3 rounded-lg flex items-center gap-2 shadow-lg transition-all">
+                            <i data-lucide="camera" class="w-4 h-4"></i>
+                            Snap / Upload Mall Outfit
+                            <input type="file" id="garmentPhotoInput" accept="image/*" class="hidden" onchange="handleGarmentUpload(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Garment Presets -->
+                <div>
+                    <label class="text-[11px] text-gray-400 mb-1.5 block">Quick Mall Store Outfits</label>
+                    <div class="grid grid-cols-3 gap-1.5 text-xs">
+                        <button onclick="loadPresetGarment('blazer')"
