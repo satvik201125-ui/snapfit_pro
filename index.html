@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fitting Room – Virtual Try-On</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <h1>Try it on before you buy it.</h1>
+  <p class="lede">Upload one full-body photo of yourself and one photo of the clothing. We keep your face and body as they are and only change what you are wearing.</p>
+
+  <section class="stage" aria-label="Try-on steps">
+    <div class="slot">
+      <h2>Your photo</h2>
+      <p class="hint">Full body, facing the camera, good light.</p>
+      <label class="drop" id="dropPerson">
+        <input type="file" accept="image/png,image/jpeg,image/webp" id="person" aria-label="Upload your photo">
+        <img alt="Preview of your photo">
+        <span class="prompt"><strong>Add your photo</strong>Click or drop an image here</span>
+      </label>
+      <button class="clear" type="button" id="clearPerson" hidden>Remove photo</button>
+    </div>
+
+    <div class="slot">
+      <h2>The clothing</h2>
+      <p class="hint">One garment on a plain background works best.</p>
+      <label class="drop" id="dropGarment">
+        <input type="file" accept="image/png,image/jpeg,image/webp" id="garment" aria-label="Upload the clothing photo">
+        <img alt="Preview of the clothing">
+        <span class="prompt"><strong>Add the clothing</strong>Click or drop an image here</span>
+      </label>
+      <button class="clear" type="button" id="clearGarment" hidden>Remove clothing</button>
+    </div>
+
+    <div class="mirror">
+      <h2>Your result</h2>
+      <p class="hint" style="margin:0 0 12px;color:var(--muted);font-size:.9rem">It appears in the mirror when it is ready.</p>
+      <div class="glass" id="glass">
+        <img id="resultImg" alt="You wearing the selected clothing">
+        <div class="msg"><div class="spin" aria-hidden="true"></div><span id="glassMsg">Add both photos, then select Generate try-on.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="controls">
+    <label class="consent">
+      <input type="checkbox" id="consent">
+      <span>I agree to send my photo and the clothing photo to a public AI service on Hugging Face to create this try-on. I understand it is not private.</span>
+    </label>
+    <button class="primary" id="go" type="button" disabled>Generate try-on</button>
+    <a class="btn secondary" id="download" download="tryon-result.png" hidden>Download result</a>
+  </div>
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+
+  <p class="fine">Results come from the IDM-VTON try-on model, which repaints only the clothing area of your original photo to keep your face and body close to the original. No AI can promise a perfect match, so check fit, patterns, and logos before you rely on the result. The free service can be busy or offline at times.</p>
+</main>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>

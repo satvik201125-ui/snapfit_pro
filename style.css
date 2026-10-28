@@ -1,0 +1,63 @@
+:root{
+  --bg:#ECEEF5; --panel:#FFFFFF; --ink:#1A2140; --muted:#5D6485;
+  --line:#D3D7E6; --accent:#3A46D8; --accent-ink:#FFFFFF; --soft:#E0E3F5;
+  --danger:#B3261E; --ok:#1F7A4D;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#12152A;--panel:#1B2040;--ink:#EDEFFA;--muted:#9AA1C7;--line:#323963;
+    --accent:#8D97FF;--accent-ink:#12152A;--soft:#262C55;--danger:#FF8A80;--ok:#7BE0A9;}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Instrument Sans",system-ui,sans-serif;line-height:1.55;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:40px 20px 64px}
+h1{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;font-size:clamp(2.2rem,5vw,3.6rem);line-height:1.05;margin:0 0 12px;letter-spacing:-.02em;max-width:16ch}
+.lede{color:var(--muted);max-width:56ch;margin:0 0 36px;font-size:1.05rem}
+
+.stage{display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:20px;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:1fr}}
+
+.slot{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.slot h2{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;margin:0 0 4px}
+.slot p.hint{margin:0 0 12px;color:var(--muted);font-size:.9rem}
+
+.drop{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;
+  aspect-ratio:3/4;border:2px dashed var(--line);border-radius:10px;cursor:pointer;overflow:hidden;
+  background:var(--bg);transition:border-color .15s,background .15s}
+.drop:hover,.drop:focus-within,.drop.over{border-color:var(--accent);background:var(--soft)}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop .prompt{padding:16px;color:var(--muted);font-size:.95rem;pointer-events:none}
+.drop .prompt strong{display:block;color:var(--ink);margin-bottom:4px}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.drop.has img{display:block}
+.drop.has .prompt{display:none}
+.clear{margin-top:10px;background:none;border:0;color:var(--muted);font:inherit;font-size:.88rem;text-decoration:underline;cursor:pointer;padding:0}
+.clear[hidden]{display:none}
+
+/* the mirror: the one distinctive element */
+.mirror{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.mirror h2{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;margin:0 0 4px}
+.glass{position:relative;aspect-ratio:3/4;border-radius:999px 999px 14px 14px;border:3px solid var(--accent);
+  background:linear-gradient(160deg,var(--soft),var(--bg));overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center}
+.glass img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.glass.done img{display:block}
+.glass .msg{padding:0 28px;color:var(--muted);font-size:.95rem}
+.glass.done .msg{display:none}
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:sp 0.9s linear infinite;margin:0 auto 12px;display:none}
+.glass.busy .spin{display:block}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+
+.controls{margin-top:28px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.consent{display:flex;gap:10px;align-items:flex-start;max-width:520px;font-size:.9rem;color:var(--muted)}
+.consent input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+button.primary,a.btn{font:inherit;font-weight:600;border:0;border-radius:999px;padding:13px 26px;cursor:pointer;
+  background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-block}
+button.primary:disabled{opacity:.45;cursor:not-allowed}
+a.btn.secondary{background:var(--soft);color:var(--ink)}
+a.btn[hidden]{display:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.status{margin-top:14px;min-height:1.4em;font-size:.95rem}
+.status.err{color:var(--danger)}
+.status.ok{color:var(--ok)}
+.fine{margin-top:36px;color:var(--muted);font-size:.85rem;max-width:70ch;border-top:1px solid var(--line);padding-top:16px}
