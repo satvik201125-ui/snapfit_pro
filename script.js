@@ -1,24 +1,16 @@
-// Catch standard runtime errors
-window.addEventListener('error', function(event) {
-    const errorData = {
-        message: event.message,
-        filename: event.filename,
-        lineno: event.lineno,
-        colno: event.colno,
-        stack: event.error ? event.error.stack : 'No stack trace'
-    };
-    
-    console.warn('AI Error Monitor caught an error:', errorData);
-    sendErrorToAI(errorData);
-});
-
-// Catch unhandled asynchronous promise rejections (e.g., failed API calls)
-window.addEventListener('unhandledrejection', function(event) {
-    const errorData = {
-        message: event.reason ? event.reason.message : 'Unhandled Promise Rejection',
-        stack: event.reason ? event.reason.stack : String(event.reason)
-    };
-    
-    console.warn('AI Error Monitor caught a promise rejection:', errorData);
-    sendErrorToAI(errorData);
-});
+async function sendErrorToAI(errorDetails) {
+    try {
+        const response = await fetch('/api/fix-error', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(errorDetails)
+        });
+        
+        const result = await response.json();
+        console.log('AI Suggested Fix:', result.patch);
+    } catch (err) {
+        console.error('Failed to communicate with AI error-fixing backend:', err);
+    }
+}
